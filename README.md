@@ -1,13 +1,13 @@
-# React/Typescript Template
+# React/TypeScript Template
 
-#### Includes:
+**Includes:**
 - React
 - TypeScript (with alias)
 - Webpack Config
 - ESLint
 - Prettier (with sort imports)
 
-#### VS Code setting (settings.json) for correct auto-imports with alias
+**VS Code setting (settings.json) for correct auto-imports with alias**
 ```
 "typescript.preferences.importModuleSpecifier": "non-relative"
 ```
