@@ -1,12 +1,17 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
-let mode = "development";
+const PRODUCTION = "production",
+  DEVELOPMENT = "development";
+
+let mode = DEVELOPMENT;
 let target = "web";
-if (process.env.NODE_ENV === "production") {
-  mode = "production";
+if (process.env.NODE_ENV === PRODUCTION) {
+  mode = PRODUCTION;
   target = "browserslist";
 }
 
@@ -16,7 +21,8 @@ module.exports = {
   entry: "./src/index.tsx",
   devtool: "source-map",
   output: {
-    filename: "main.js",
+    filename: "[name].bundle.js",
+    chunkFilename: "[name].bundle.js",
     path: path.resolve(__dirname, "dist"),
     clean: true,
     assetModuleFilename: "assets/[hash][ext][query]",
@@ -34,62 +40,48 @@ module.exports = {
       },
       {
         test: /\.m?[jt]sx?$/,
-        exclude: "/node_modules",
+        exclude: "/node_modules/",
         use: {
           loader: "babel-loader",
-          options: {
-            presets: [
-              "@babel/preset-env",
-              ["@babel/preset-react", { runtime: "automatic" }],
-              "@babel/preset-typescript",
-            ],
-          },
         },
       },
       {
         test: /\.(png|jpe?g|gif|svg|webp|ico)$/i,
         type: "asset/resource",
-        // loader: 'file-loader',
-        // options: {
-        //     name: '[name].[ext]',
-        // },
       },
-      // {
-      //     test: /\.(woff2?|eot|ttf|otf)$/i,
-      //     type: 'asset/resource',
-      // },
-      // {
-      //     test: /\.tsx?$/,
-      //     exclude: "/node_modules",
-      //     use: "ts-loader"
-      // }
     ],
   },
   resolve: {
+    // alias: {
+    //   "@": path.resolve(__dirname, "./src"),
+    // },
+    plugins: [new TsconfigPathsPlugin()],
     extensions: [
+      ".ts",
+      ".tsx",
       ".scss",
       ".css",
       ".webpack.js",
       ".web.js",
-      ".ts",
-      ".tsx",
       ".js",
     ],
   },
   plugins: [
+    new Dotenv(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: "./src/index.html",
     }),
     new MiniCssExtractPlugin({
-      filename: "[name].[contenthash].css",
+      filename:
+        mode === DEVELOPMENT ? "[name].css" : "[name].[contenthash].css",
     }),
   ],
   devServer: {
     static: "./dist",
   },
   optimization: {
-    nodeEnv: "development",
+    nodeEnv: DEVELOPMENT,
   },
 };
