@@ -25,36 +25,54 @@ module.exports = {
     chunkFilename: "[name].bundle.js",
     path: path.resolve(__dirname, "dist"),
     clean: true,
-    assetModuleFilename: "assets/[hash][ext][query]",
+    assetModuleFilename: "assets/[hash][ext][query]"
   },
   module: {
     rules: [
       {
+        test: /\.module\.s?css$/,
+        use: [
+          mode === DEVELOPMENT ? "style-loader" : MiniCssExtractPlugin.loader,
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                localIdentName:
+                  mode === PRODUCTION
+                    ? "[hash:base64]"
+                    : "[local]_[hash:base64]",
+                localIdentHashDigestLength: 7
+              }
+            }
+          },
+          "postcss-loader",
+          "sass-loader"
+        ]
+      },
+      {
         test: /\.s?css$/,
+        exclude: /\.module\.s?css$/,
         use: [
           MiniCssExtractPlugin.loader,
           "css-loader",
           "postcss-loader",
-          "sass-loader",
-        ],
+          "sass-loader"
+        ]
       },
       {
         test: /\.m?[jt]sx?$/,
         exclude: "/node_modules/",
         use: {
-          loader: "babel-loader",
-        },
+          loader: "babel-loader"
+        }
       },
       {
         test: /\.(png|jpe?g|gif|svg|webp|ico)$/i,
-        type: "asset/resource",
-      },
-    ],
+        type: "asset/resource"
+      }
+    ]
   },
   resolve: {
-    // alias: {
-    //   "@": path.resolve(__dirname, "./src"),
-    // },
     plugins: [new TsconfigPathsPlugin()],
     extensions: [
       ".ts",
@@ -63,25 +81,24 @@ module.exports = {
       ".css",
       ".webpack.js",
       ".web.js",
-      ".js",
-    ],
+      ".js"
+    ]
   },
   plugins: [
     new Dotenv(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       filename: "index.html",
-      template: "./src/index.html",
+      template: "./src/index.html"
     }),
     new MiniCssExtractPlugin({
-      filename:
-        mode === DEVELOPMENT ? "[name].css" : "[name].[contenthash].css",
-    }),
+      filename: mode === DEVELOPMENT ? "[name].css" : "[name].[contenthash].css"
+    })
   ],
   devServer: {
-    static: "./dist",
+    static: "./dist"
   },
   optimization: {
-    nodeEnv: DEVELOPMENT,
-  },
+    nodeEnv: DEVELOPMENT
+  }
 };

@@ -1,0 +1,11 @@
+*.tsx
+*.jsx
+*.ts
+*.js
+*.md
+*.svg
+*.png
+*.jpg
+*.html
+/node_modules
+/src/assets
